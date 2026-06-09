@@ -3,6 +3,7 @@ package br.edu.ifgoiano.academico.sd_academico_historico_service.config;
 import org.springframework.amqp.core.*;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.amqp.core.Declarables;
 
 /**
  * Configuração do RabbitMQ para o Histórico Service.
@@ -55,6 +56,14 @@ public class RabbitMQConfig {
         return BindingBuilder.bind(queueEventoHistorico)
                 .to(academicoExchange)
                 .with(ROUTING_KEY_MATRICULA_CANCELADA);
+    }
+
+    @Bean
+    public Declarables loggingDeclarables() {
+        TopicExchange logsExchange = new TopicExchange("logs.academico", true, false);
+        Queue logsQueue = new Queue("logs.all", true);
+        Binding logsBinding = BindingBuilder.bind(logsQueue).to(logsExchange).with("logs.#");
+        return new Declarables(logsExchange, logsQueue, logsBinding);
     }
 }
 
